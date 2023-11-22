@@ -25,6 +25,7 @@ Shader "Custom/MyFirstShader"
         struct Input
         {
             float2 uv_MainTex;
+            float3 worldPos;
         };
 
         half _Glossiness;
@@ -41,15 +42,36 @@ Shader "Custom/MyFirstShader"
 
         void surf(Input IN, inout SurfaceOutputStandard o)
         {
-            // Albedo comes from a texture tinted by color
             fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _ColorPrimary;
+    
+            float deltaTime = 2.0;
+            float currPos = (_Time.y % deltaTime) / deltaTime;
+            float straightLine = abs(IN.worldPos.y + 0.5 - currPos);
+            
+            if (straightLine < 0.02)
+            {
+                o.Albedo = fixed3(1.0, 1.0, 1.0);
+            }
+    
+            if (currPos < straightLine)
+            {
+                o.Albedo = fixed3(0.0, 0.0, 1.0);
+            }
+            else
+            {
+                o.Albedo = fixed3(0.0, 1.0, 0.0);
+            }
+    
+            
+            // Albedo comes from a texture tinted by color
 
-        if ((IN.uv_MainTex.x > 0.5f && IN.uv_MainTex.y > 0.5f) || (IN.uv_MainTex.x < 0.5f && IN.uv_MainTex.y < 0.5f))
-        {
-            c = tex2D(_MainTex, IN.uv_MainTex) * _ColorSecondary;
-        }
+        
+            // float3 newPosition = IN.worldPos + float3(0.5, 0.5, 0.5);
+            // o.Albedo = fixed3(newPosition);
 
-            o.Albedo = c.rgb;
+    
+            // o.Albedo = fixed4(IN.uv_MainTex.xy, 0.0, 1.0);
+            // o.Albedo = c.rgb;
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
