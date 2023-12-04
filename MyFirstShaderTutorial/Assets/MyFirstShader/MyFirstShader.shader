@@ -62,7 +62,7 @@ Shader "Custom/MyFirstShader"
                 }
                 else
                 {
-                    o.Albedo = fixed3(1.0, 1.0, 0.0); // // cube bagian bawah = merah
+                    o.Albedo = fixed3(1.0, 1.0, 0.0); // // cube bagian bawah = kuning
                 }
             }
     
