@@ -44,22 +44,43 @@ Shader "Custom/MyFirstShader"
         {
             fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _ColorPrimary;
     
-            float deltaTime = 2.0;
+            float deltaTime = 1.0;
             float currPos = (_Time.y % deltaTime) / deltaTime;
-            float straightLine = abs(IN.worldPos.y + 0.5 - currPos);
+            float straightLine = abs(IN.worldPos.y + 0.5);
+            float transitionThreshold = 0.02;
             
-            if (straightLine < 0.02)
+            if ((int) (_Time.y / deltaTime) % 2 == 0)
             {
-                o.Albedo = fixed3(1.0, 1.0, 1.0);
+            // transisi ke bawah
+                if (straightLine > 1.0 - currPos)
+                {
+                    o.Albedo = fixed3(0.0, 1.0, 0.0); // cube bagian atas = hijau
+                }
+                else if (abs(straightLine - (1.0 - currPos)) < transitionThreshold)
+                {
+                    o.Albedo = fixed3(1.0, 1.0, 1.0); // warna putih untuk garis pemisah
+                }
+                else
+                {
+                    o.Albedo = fixed3(1.0, 1.0, 0.0); // // cube bagian bawah = merah
+                }
             }
     
-            if (currPos < straightLine)
-            {
-                o.Albedo = fixed3(0.0, 0.0, 1.0);
-            }
             else
             {
-                o.Albedo = fixed3(0.0, 1.0, 0.0);
+            // transisi ke atas
+                if (straightLine > currPos)
+                {
+                    o.Albedo = fixed3(1.0, 0.0, 0.0); // cube bagian atas = merah
+                }
+                else if (abs(straightLine - currPos) < transitionThreshold)
+                {
+                    o.Albedo = fixed3(1.0, 1.0, 1.0); // warna putih untuk garis pemisah
+                }
+                else
+                {
+                    o.Albedo = fixed3(0.0, 0.0, 0.0); // cube bagian bawah = hitam
+                }
             }
     
             
